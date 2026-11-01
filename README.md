@@ -105,7 +105,7 @@ Cost Explorer muestra provisionalmente **0.00 USD** en el reporte capturado. Esa
 
 La estimación inicial de planificación era de aproximadamente 0.09 USD por hora, unos 7 USD por 72 horas en us-east-1. Es una referencia previa, no un costo medido ni una cotización actual. El escalado y el tiempo de uso pueden cambiar el total.
 
-Pendiente: volver a consultar Cost Explorer, guardar el desglose actualizado y registrar el costo final. El enlace a una estimación en AWS Pricing Calculator también está pendiente.
+Pendiente: volver a consultar Cost Explorer, guardar el desglose actualizado y registrar el costo final.
 
 ## Resultados de las pruebas
 
@@ -116,6 +116,8 @@ Resultados registrados con ApacheBench sobre `/api/visita`:
 | Base | 2000 | 0 | 1831.16 | No se consigna un conteo en la captura seleccionada. |
 | Carga sostenida | 1000000 | 0 | 3975.47 | No se consigna un conteo en la captura seleccionada. |
 | Falla al detener una instancia | 546233 | 0 | 1811.65 | 5292, aproximadamente 0.97%. |
+
+Para la prueba base, `Time per request` fue **10.922 ms** (promedio por solicitud) y el percentil **95% fue 17 ms**. Junto con **1831.16 peticiones/s** y **Failed requests: 0**, estos son los cuatro valores de la línea base solicitados en la presentación. Los valores corresponden a la captura 22.
 
 En la prueba de falla, `Failed requests: 0` y `Non-2xx responses: 5292` son contadores distintos del reporte. El porcentaje es `5292 / 546233 × 100 ≈ 0.97%`. **Hubo respuestas HTTP no 2xx; la prueba no ocurrió sin errores HTTP.**
 
