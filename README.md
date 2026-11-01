@@ -149,7 +149,9 @@ Los enlaces siguientes apuntan a capturas que existen en la carpeta de evidencia
 
 Se incluyen código, plantilla, documentación y evidencias. `.gitignore` excluye `node_modules`, archivos `.env` con configuración local, claves privadas y copias `.bak`. Los ejemplos como `.env.example`, `.env.sample` y `.env.template` se conservan y deben contener solo valores de muestra, sin secretos.
 
-Antes de publicar, revise `git status` y el contenido de los archivos que va a incluir. No suba contraseñas, credenciales ni claves privadas. El commit y el push quedan pendientes.
+El código, la plantilla, el README y las 40 capturas están publicados en la rama `main` de [Raulsc87/practica-final-redes-ii](https://github.com/Raulsc87/practica-final-redes-ii).
+
+Para las próximas actualizaciones, revise `git status` y los archivos que va a incluir antes de hacer commit y push. No suba contraseñas, credenciales ni claves privadas.
 
 ## Limpieza
 
