@@ -1,0 +1,28 @@
+# Dependencias instaladas localmente
+node_modules/
+
+# Configuracion local que puede contener secretos
+.env
+.env.*
+!.env.example
+!.env.sample
+!.env.template
+!.env.*.example
+!.env.*.sample
+!.env.*.template
+
+# Claves privadas y contenedores de claves
+*.pem
+*.key
+*.p8
+*.p12
+*.pfx
+*.ppk
+id_rsa
+id_dsa
+id_ecdsa
+id_ed25519
+
+# Copias de respaldo
+*.bak
+*.bak.*

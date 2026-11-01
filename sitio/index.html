@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Proyecto final — Redes II | Universidad Mesoamericana</title>
+  <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+  <header>
+    <p class="etiqueta"><span id="equipo-universidad">Universidad Mesoamericana</span> · <span id="equipo-curso">Redes II</span></p>
+    <h1>Proyecto final — Redes II</h1>
+    <p class="sub">Página estática en <b>S3 + CloudFront</b> · API en <b>EC2</b> detrás de un <b>balanceador</b> · datos en <b>RDS PostgreSQL</b></p>
+    <div class="grupo">
+      <p>Integrantes</p>
+      <ul id="equipo-integrantes">
+        <li>José Raúl Soto Cal</li>
+        <li>Diego Alejandro Xicará Santizo</li>
+        <li>Denilson Yair Díaz López</li>
+      </ul>
+    </div>
+    <p class="estado-equipo" id="equipo-estado" role="status">Consultando información del equipo…</p>
+  </header>
+
+  <!-- Las tres tarjetas usan la API (/api/...). Puede cambiar los textos o agregar tarjetas nuevas -->
+  <main>
+    <section class="tarjeta">
+      <h2>1. ¿Qué servidor me respondió?</h2>
+      <p>Cada clic pasa por CloudFront y el balanceador, que elige uno de los servidores.</p>
+      <div class="servidor">
+        <div><span class="dato" id="srv-id">—</span><span class="nombre">Servidor (ID de instancia)</span></div>
+        <div><span class="dato" id="srv-zona">—</span><span class="nombre">Zona de disponibilidad</span></div>
+        <div><span class="dato" id="srv-bd">—</span><span class="nombre">Base de datos</span></div>
+      </div>
+      <button id="btn-preguntar">Volver a preguntar</button>
+      <p class="historial" id="historial"></p>
+    </section>
+
+    <section class="tarjeta">
+      <h2>2. Reparto de la carga</h2>
+      <p>Peticiones registradas en PostgreSQL por cada servidor. Se actualiza cada 5 segundos.</p>
+      <p class="total">Total: <b id="total">0</b> peticiones</p>
+      <div id="barras"></div>
+      <button id="btn-visita">Registrar 10 visitas</button>
+    </section>
+
+    <section class="tarjeta ancha">
+      <h2>3. Libro de visitas</h2>
+      <form id="formulario">
+        <input id="nombre" aria-label="Su nombre" placeholder="Su nombre" maxlength="80" required>
+        <input id="mensaje" aria-label="Su mensaje" placeholder="Su mensaje" maxlength="500" required>
+        <button type="submit">Publicar</button>
+      </form>
+      <ul id="mensajes"></ul>
+    </section>
+  </main>
+
+  <footer>Universidad Mesoamericana · Proyecto final — Redes II<br>Arquitectura de tres capas en AWS · S3, CloudFront, EC2 y PostgreSQL</footer>
+  <script src="app.js"></script>
+</body>
+</html>

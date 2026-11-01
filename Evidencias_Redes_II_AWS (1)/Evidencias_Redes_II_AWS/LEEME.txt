@@ -1,0 +1,239 @@
+EVIDENCIAS - PRÁCTICA FINAL REDES II
+Fecha: 31 de octubre de 2026
+
+01_pila_CREATE_COMPLETE.png
+La pila PracticaIntegradora muestra CREATE_COMPLETE en el panel izquierdo.
+Los eventos CREATE_IN_PROGRESS visibles a la derecha son eventos anteriores.
+Recorte del encabezado de cuenta; se conserva el estado de la pila.
+
+02_salidas_infraestructura.png
+Salidas: BalanceadorAPI, BucketSitio, DistribucionId, EndpointBaseDatos, GrupoAutoScaling y SitioWeb.
+
+03_archivos_listos_para_cargar_S3.png
+index.html, estilos.css y app.js seleccionados en la raíz del bucket del sitio.
+Esta captura documenta la preparación de la carga, no el mensaje de carga finalizada.
+Se ha recortado únicamente el encabezado de navegación.
+
+04_sitio_balanceo_20_peticiones.png
+La página muestra conexión a PostgreSQL 18.3, dos servidores y 20 peticiones registradas.
+Servidor i-01a76ed5f1fd98f48, zona us-east-1a: 11 peticiones (55%).
+Servidor i-05b43a049eea89f10, zona us-east-1b: 9 peticiones (45%).
+El historial muestra respuestas de ambos servidores.
+
+05_mensaje_guardado.png
+Mensaje de prueba visible tras recargar, según confirmación del estudiante.
+Contenido: Prueba de guardado en PostgreSQL.
+La página indica que fue guardado por i-05b43a049eea89f10.
+
+06_mapa_red_VPC.png
+Mapa de PracticaIntegradora-vpc: cuatro subredes, dos zonas (us-east-1a y us-east-1b), dos tablas de enrutamiento y un Internet Gateway.
+Las subredes publicas-a y publica-b se asocian a la tabla rutas-publicas, conectada al gateway.
+Las privadas se asocian a la tabla principal, sin conexion al gateway en el mapa.
+Se ha recortado el encabezado y el menu; el mapa de recursos se conserva.
+
+07_regla_balanceador_HTTP_80.png
+Grupo del balanceador sg-04eb8ff4b3f2d263d: una regla de entrada HTTP, protocolo TCP, puerto 80, origen 0.0.0.0/0.
+Permite solicitudes HTTP desde cualquier direccion IPv4.
+
+08_reglas_API_3000_y_SSH_22.png
+Grupo API sg-0e26720248267626e: TCP 3000 desde el grupo del balanceador sg-04eb8ff4b3f2d263d; SSH TCP 22 desde 0.0.0.0/0.
+La restriccion del puerto 3000 evita el acceso directo de internet a la API.
+SSH se permite desde internet para la administracion prevista en la practica.
+
+09_regla_PostgreSQL_5432.png
+Grupo de base de datos sg-023c8a80e104afd16: una regla PostgreSQL TCP 5432 cuyo origen es el grupo API sg-0e26720248267626e.
+Con las capturas 07 y 08 se documenta la cadena de grupos: internet al balanceador (80), balanceador a API (3000), API a PostgreSQL (5432).
+La prueba externa de PostgreSQL se documenta en la captura 12; la prueba de la API se documenta en la captura 13 y la conexion TCP desde EC2 se documenta en la captura 14.
+
+10_dos_destinos_sanos.png
+El grupo de destino HTTP 3000 presenta 2 destinos totales, 2 en buen estado y 0 en mal estado.
+La captura muestra un resumen de salud; no la tabla individual de instancias.
+Se recortan unicamente el encabezado de cuenta y el menu lateral.
+
+11_balanceador_activo_dos_zonas.png
+Balanceador de tipo Application, estado Activo, esquema Internet-facing, IPv4.
+Sus subredes estan en us-east-1a y us-east-1b; utiliza el grupo del balanceador sg-04eb8ff4b3f2d263d.
+
+12_PostgreSQL_sin_conexion_desde_CloudShell.png
+CloudShell resuelve el endpoint RDS a la IP privada 10.0.12.117.
+La apertura TCP al puerto 5432, con limite de 5 segundos, no se establece desde CloudShell.
+Esto documenta ausencia de conectividad desde ese entorno; la conexion TCP desde EC2 se confirma en la captura 14.
+
+13_API_directa_sin_conexion_balanceador_ok.png
+CloudShell obtiene la IP publica de un servidor del grupo: 34.234.170.16.
+No se establece conexion TCP directa a su puerto 3000 dentro de 5 segundos.
+La solicitud HTTP a /api/ping mediante el balanceador devuelve el texto ok.
+La respuesta real es texto, no JSON. La comparacion confirma el acceso por el balanceador en esta prueba.
+
+14_PostgreSQL_puerto_abierto_desde_EC2.png
+Desde el servidor EC2 con IP privada 10.0.1.104 se abre una conexion TCP a 10.0.12.117:5432 y aparece ABIERTO.
+La captura conserva errores anteriores de pegado duplicado y un comando final con texto duplicado en echo.
+El primer timeout del comando final debe completarse correctamente para ejecutar el echo tras &&; por ello el resultado confirma apertura TCP.
+Esta prueba verifica conectividad de red; la autenticacion se documenta en la captura 15; la consulta de visitas se documenta en la captura 16.
+
+15_conexion_PostgreSQL_SSL_desde_EC2.png
+El atajo sudo bd abre psql en la base proyecto desde EC2.
+Servidor PostgreSQL 18.3, cliente psql 16.15; conexion SSL TLSv1.3.
+El aviso de diferencia de versiones no impide esta conexion.
+Al final aparece sudo bd duplicado escrito dentro de psql, como texto pendiente sin ejecutar; debe cancelarse con Ctrl+C antes de consultar.
+
+16_SQL_visitas_por_servidor_y_zona.png
+Consulta SELECT servidor, zona, COUNT(*) AS peticiones FROM visitas GROUP BY servidor, zona.
+Resultado: i-05b43a049eea89f10, us-east-1b, 9 visitas; i-01a76ed5f1fd98f48, us-east-1a, 11 visitas.
+Total: 20 visitas. Los valores coinciden con la captura 04 del sitio.
+La consulta se pego y ejecuto dos veces; ambas lecturas muestran los mismos datos y no modifican registros.
+
+17_SQL_mensaje_guardado_en_PostgreSQL.png
+SELECT * FROM mensajes ORDER BY id DESC LIMIT 5 muestra una fila.
+ID 1; nombre RAUL SOTO; mensaje Prueba de guardado en PostgreSQL; servidor i-05b43a049eea89f10.
+Fecha registrada: 2026-10-31 22:12:19.197333+00.
+La consulta duplicada muestra el mismo registro dos veces, sin crear dos mensajes.
+El contenido coincide con la captura 05 de la pagina y confirma persistencia en la base.
+
+18_registros_API_interpolaciones_literales_pendiente.png
+journalctl -u api muestra entradas del proceso Node, pero los campos JavaScript aparecen literales: ${new Date().toISOString()}, ${ip}, ${req.method}, ${req.originalUrl}, ${res.statusCode}.
+Esta captura documenta un defecto pendiente en el formato de logs; no demuestra que se registren correctamente metodos, rutas ni estados HTTP.
+Se requiere inspeccionar /opt/api/server.js antes de determinar la correccion.
+
+19_API_logs_correctos_EC2_zona_a.png
+Tras eliminar las barras ante ${ en /opt/api/server.js, validar sintaxis y reiniciar api, los registros de ip-10-0-1-104 muestran fecha real, origen ::1, metodo GET, ruta /api/salud y estado 200.
+Se conserva un recorte de las cuatro entradas locales; se excluyen lineas con direcciones de visitantes. No se recrean datos.
+La captura fuente tambien muestra respuesta de /api/salud para i-01a76ed5f1fd98f48, us-east-1a y PostgreSQL 18.3.
+La correccion solo esta confirmada en esta instancia; falta la segunda y la plantilla utilizada para instancias futuras.
+
+20_API_arranque_correcto_EC2_zona_b.png
+Tras corregir las barras ante ${ y validar sintaxis, se reinicia api en ip-10-0-2-75.
+El registro muestra Conectado a PostgreSQL. Servidor i-05b43a049eea89f10 en us-east-1b, seguido de API escuchando en el puerto 3000.
+Recorte de las lineas de arranque; se excluyen lineas con direcciones de visitantes.
+
+21_API_salud_200_EC2_zona_b.png
+El mismo proceso Node registra la solicitud local ::1 GET /api/salud -> 200.
+Recorte de la entrada local y prompt de ip-10-0-2-75.
+Con las capturas 19, 20 y 21 quedan verificados los logs de ambas instancias actuales. Falta corregir y desplegar la plantilla para instancias futuras.
+
+22_ApacheBench_prueba_base_2000_sin_fallos.png
+Resultado de la prueba base ApacheBench indicada: ab -l -n 2000 -c 20 con la URL BalanceadorAPI.
+La captura muestra 2000 solicitudes completas y 0 fallidas; duracion 1.092 s; 1831.16 solicitudes/s.
+Tiempo medio por solicitud: 10.922 ms; tiempo medio entre solicitudes considerando concurrencia: 0.546 ms.
+Percentiles: 50%=7 ms; 90%=14 ms; 95%=17 ms; 99%=125 ms; maximo=203 ms.
+Resultados observados en esta ejecucion breve desde CloudShell; no son garantia de capacidad sostenida.
+El indicador -l admite longitudes variables de respuestas dinamicas.
+
+23_AutoScaling_cuatro_instancias_Healthy.png
+El grupo PracticaIntegradora-AutoScalingGroup-5rQDHtYpkghv muestra 4 instancias y capacidad deseada 4, minimo 2 y maximo 4.
+Las cuatro son t3.micro, InService y Healthy segun Auto Scaling; dos estan en us-east-1a y dos en us-east-1b.
+Las instancias visibles difieren de las dos originales; estas ya no deben usarse como destinos de conexion sin consultar el inventario actual.
+Esta captura confirma la capacidad actual, pero la causa del aumento debe verificarse en Actividad. Tampoco sustituye la comprobacion de salud individual en el grupo de destino del balanceador.
+
+24_Actividad_escalado_automatico_de_2_a_4.png
+El historial de Auto Scaling identifica una alarma TargetTracking AlarmHigh en estado ALARM que activo la politica PracticaIntegradora-ScalingPolicy y cambio la capacidad deseada de 2 a 4.
+La causa registra la alarma a las 2026-10-31T23:28:52Z y el inicio de instancias a las 23:29:07Z.
+Se muestran dos lanzamientos con estado Correcto: i-04bae5d4342b1115b e i-0a57591584299357d.
+Esta evidencia confirma que el aumento de capacidad se debio a la politica automatica; la captura 23 muestra las cuatro instancias saludables segun Auto Scaling.
+
+25_ApacheBench_carga_millon_sin_fallos.png
+ApacheBench sobre el balanceador, puerto 80, ruta /api/visita, longitud variable, concurrencia 30.
+1,000,000 solicitudes completas; 0 fallidas; duracion 251.542 segundos, inferior a 300 porque se alcanzo el limite de solicitudes.
+Rendimiento medio observado: 3975.47 solicitudes/s. Tiempo medio por solicitud: 7.546 ms; entre solicitudes con concurrencia: 0.252 ms.
+Percentiles: 50%=7 ms; 90%=11 ms; 95%=13 ms; 99%=24 ms; maximo=411 ms.
+Esta medicion abarca la ejecucion completa durante la que se solicito observar escalado; no aisla una prueba estable de cuatro servidores.
+
+26_falla_instancia_EC2_detenida.png
+La instancia seleccionada i-0021ab9d57acb198f esta Detenida; zona us-east-1a, IP privada 10.0.1.16.
+Otras tres instancias del proyecto siguen En ejecucion con 3/3 comprobaciones de estado.
+Las dos instancias originales anteriores aparecen Terminada y no forman parte de la falla actual.
+La captura confirma la detencion de una instancia; falta demostrar deteccion por el balanceador, reemplazo automatico y resultado de carga durante la falla.
+
+27_balanceador_tres_sanos_uno_en_retirada.png
+Tras la detencion de la captura 26, el grupo de destino HTTP 3000 muestra 4 destinos totales: 3 en buen estado, 0 en mal estado y 1 Vaciado (draining).
+El destino en retirada esta siendo desregistrado; esta captura es del resumen, sin los IDs de la tabla individual.
+Confirma tres destinos saludables disponibles durante la prueba; el resultado de las peticiones y el reemplazo se verificaran con sus evidencias correspondientes.
+
+28_AutoScaling_reemplazo_automatico_por_falla.png
+El historial muestra terminacion Correcto de i-0021ab9d57acb198f: comprobacion EC2 detecto que la instancia habia sido detenida o terminada a las 2026-10-31T23:43:11Z.
+Se lanza i-0726074e0b45ebd17 para sustituir una instancia no saludable. Inicio 23:43:13Z; finalizacion 23:43:19Z, estado Correcto.
+Confirma reemplazo automatico por falla, distinto del escalado por carga previo. Falta verificar el nuevo destino saludable en el balanceador.
+
+29_ApacheBench_durante_falla_respuestas_no_2xx.png
+Prueba sobre /api/visita, longitud variable, concurrencia 20, duracion 301.511 s.
+546233 solicitudes completas; Failed requests: 0; Non-2xx responses: 5292 (aproximadamente 0.969% del total).
+Rendimiento 1811.65 solicitudes/s; tiempo medio por solicitud 11.040 ms; considerando concurrencia 0.552 ms.
+Percentiles: 50%=5 ms; 90%=7 ms; 95%=9 ms; 99%=42 ms; maximo=34658 ms.
+El contador Failed requests no incluye todas las respuestas HTTP fuera de 2xx. La prueba NO demuestra ausencia de errores HTTP ni continuidad sin impacto.
+No se conoce el codigo HTTP exacto de esas 5292 respuestas a partir de este resumen. Se requiere comprobacion posterior del estado de la API y del destino de reemplazo.
+
+30_destinos_tres_Healthy_anterior_Draining.png
+La tabla muestra tres destinos Healthy en el puerto 3000: i-0a57591584299357d, i-04bae5d4342b1115b e i-08633bc47f4da5157.
+La instancia detenida i-0021ab9d57acb198f sigue Draining. El reemplazo i-0726074e0b45ebd17 no aparece en esta captura; no se confirma aun su salud en el balanceador.
+
+31_API_HTTP_200_PostgreSQL_tras_falla.png
+CloudShell consulta /api/salud mediante el balanceador y recibe HTTP/1.1 200 OK, Content-Type application/json.
+Fecha HTTP: Sat, 31 Oct 2026 23:53:17 GMT.
+JSON: servidor i-04bae5d4342b1115b, zona us-east-1b, hora_bd 2026-10-31T23:53:17.360Z, version PostgreSQL 18.3.
+Confirma una solicitud satisfactoria con consulta a PostgreSQL despues de la prueba de falla. No elimina las 5292 respuestas no 2xx registradas durante la prueba ni acredita la salud del reemplazo.
+
+32_reemplazo_AutoScaling_InService_Healthy.png
+Administracion de instancias del grupo Auto Scaling muestra cuatro instancias t3.micro, todas InService y Healthy.
+El reemplazo i-0726074e0b45ebd17 esta en us-east-1a y sustituye a i-0021ab9d57acb198f, que ya no aparece en este inventario.
+Las otras instancias son i-04bae5d4342b1115b (us-east-1b), i-08633bc47f4da5157 (us-east-1b) e i-0a57591584299357d (us-east-1a).
+Con la evidencia 28 confirma deteccion, lanzamiento automatico y pertenencia saludable del reemplazo al grupo. Esta vista no sustituye el estado individual del destino en el balanceador.
+
+33_balanceador_reemplazo_y_cuatro_destinos_Healthy.png
+El grupo de destino muestra cuatro destinos registrados, todos Healthy en el puerto 3000: i-0726074e0b45ebd17 e i-0a57591584299357d en us-east-1a; i-04bae5d4342b1115b e i-08633bc47f4da5157 en us-east-1b.
+El reemplazo i-0726074e0b45ebd17 esta saludable en el balanceador; la instancia detenida i-0021ab9d57acb198f ya no aparece en la tabla.
+Con 26, 28, 31 y 32 completa la evidencia de detencion, deteccion, reemplazo automatico, respuesta HTTP 200 con PostgreSQL y recuperacion de cuatro destinos saludables.
+La recuperacion no implica continuidad sin impacto: la captura 29 conserva 5292 respuestas no 2xx durante la prueba.
+
+34_CloudFormation_estado_UPDATE_COMPLETE.png
+La captura recibida muestra la pila PracticaIntegradora en estado UPDATE_COMPLETE, tanto en el panel izquierdo como en un evento de la pila.
+El evento visible tiene marca 2026-10-31 17:18:13 UTC-0600; puede pertenecer a una actualizacion anterior. Por si sola no verifica que la personalizacion /api/equipo este desplegada.
+Se recorta el encabezado de cuenta y el panel CloudShell desconectado, conservando estado y eventos originales.
+Pendiente comprobar /api/equipo sobre la API publicada y subir el sitio personalizado.
+
+35_API_equipo_publicada_HTTP_200.png
+Desde CloudShell se obtiene BalanceadorAPI mediante los Outputs de PracticaIntegradora y se consulta /api/equipo a traves del balanceador.
+Respuesta HTTP/1.1 200 OK, application/json; fecha HTTP Sun, 01 Nov 2026 01:54:45 GMT (31 de octubre, 19:54:45 en Guatemala).
+JSON: universidad Universidad Mesoamericana; curso Redes II; integrantes Jose Raul Soto Cal, Diego Alejandro Xicara Santizo y Denilson Yair Diaz Lopez, con acentos en la respuesta original.
+Confirma que la ruta personalizada esta disponible en la API publicada; falta subir y comprobar la version personalizada del sitio en S3/CloudFront.
+Una respuesta satisfactoria no identifica que instancia respondio ni acredita por separado la version de cada instancia.
+
+36_S3_sitio_personalizado_tres_archivos_carga_correcta.png
+La consola S3 confirma carga correcta de 3 archivos (10.5 KB, 100%) en s3://practicaintegradora-sitebucket-y86y6acrnzvr, sin archivos fallidos.
+app.js (4.1 KB), estilos.css (3.7 KB) e index.html (2.6 KB) aparecen en la raiz, cada uno con estado Realizado correctamente y tipo de contenido correspondiente.
+Se recorta el encabezado de cuenta y CloudShell, conservando la confirmacion y tabla originales.
+Esta captura confirma la carga; falta invalidar cache y comprobar visualmente el sitio personalizado servido por CloudFront.
+
+37_CloudFront_invalidacion_completada.png
+La consola CloudFront muestra una invalidacion con estado Completed y ruta de objetos /*.
+Fecha de creacion visible: November 1, 2026 at 2:08:35 AM UTC (31 de octubre, 20:08:35 en Guatemala).
+Se conserva un recorte de confirmacion y detalles, sin encabezado de cuenta ni CloudShell.
+La invalidacion finalizo; falta confirmar visualmente el sitio actualizado y el funcionamiento de la informacion del equipo en la pagina publicada.
+
+38_sitio_personalizado_equipo_confirmado_por_API.png
+El sitio muestra Universidad Mesoamericana, Proyecto final - Redes II y los nombres Jose Raul Soto Cal, Diego Alejandro Xicara Santizo y Denilson Yair Diaz Lopez, con acentos en la captura original.
+El mensaje Informacion del equipo confirmada por la API acredita visualmente la carga de la informacion del equipo en el sitio.
+La tarjeta de salud muestra servidor i-094f33e8093c6a181, zona us-east-1b y PostgreSQL 18.3.
+El reparto de carga muestra 1542988 peticiones historicas en PostgreSQL: 599145, 11, 147609, 9, 648607 y 147607 repartidas entre seis IDs historicos.
+Esos IDs son historial de visitas; no equivalen al inventario actual de instancias activas. Los porcentajes estan redondeados.
+Con las capturas 35, 36 y 37 documenta la personalizacion de API y sitio publicada, la carga S3 y la invalidacion completada.
+No se ha verificado en esta captura el formulario de mensajes tras la personalizacion ni la vista movil.
+
+39_CostExplorer_diario_lectura_provisional_0_USD.png
+Cost Explorer muestra costo total 0.00 USD y costo medio diario 0.00 USD; recuento de servicios 4.
+La grafica presenta Oct-31 y Nov-01 con asteriscos. La leyenda y el detalle visible incluyen Relational Database Service, S3, Glue y CloudWatch, todos a 0.00 USD en el detalle mostrado.
+La captura no contiene los parametros completos ni la tabla inferior. No permite verificar por si sola el filtro Usage previamente indicado, otros filtros o valores con precision mayor que dos decimales.
+Es una lectura provisional del reporte consultado; no demuestra costo final cero, ausencia de consumo ni que los costos correspondan exclusivamente a esta pila. EC2 y Elastic Load Balancing no aparecen entre los cuatro servicios mostrados.
+Pendiente volver a consultar tras actualizacion de los datos de facturacion, conservar parametros y desglose, y obtener el costo acumulado final tras la eliminacion prevista.
+
+40_CostExplorer_desglose_provisional_por_servicio.png
+La tabla de Cost Explorer muestra total 0.00 USD para el intervalo visible Oct-31 y Nov-01, ambos con asterisco.
+Relational Database Service, S3, Glue y CloudWatch muestran total 0.00 USD y Oct-31 0.00 USD; sus celdas individuales de Nov-01 muestran guiones.
+Es una lectura provisional y no acredita costo final cero ni atribucion exclusiva a la pila.
+Se reviso el calendario del PDF original: sabado y domingo sitio encendido; lunes 2 demostracion, costo real en Cost Explorer y eliminacion. Antes de borrar se exportan GROUP BY y captura de Cost Explorer; despues se verifica DELETE_COMPLETE e inventario.
+El documento no exige esperar exactamente un dia. AWS documenta actualizacion de costos al menos cada 24 horas, con posibles retrasos superiores para algunos datos.
+
+PENDIENTES DE EVIDENCIA
+Costo acumulado en Cost Explorer; entrega GitHub/README y video;
+costo final; eliminación DELETE_COMPLETE.
+
+Las capturas son evidencia real del avance. No se han generado ni recreado pantallas.

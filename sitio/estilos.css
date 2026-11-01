@@ -1,0 +1,54 @@
+/* Proyecto final — Redes II · Universidad Mesoamericana */
+:root {
+  --color-principal: #235f73;   /* botones, titulos y barras */
+  --color-oscuro: #142d3b;      /* encabezado */
+  --color-fondo: #f2f5f6;       /* fondo de la pagina */
+  --color-tarjeta: #ffffff;     /* fondo de las tarjetas */
+  --color-suave: #edf4f5;       /* cuadros de datos */
+  --fuente: "Segoe UI", Arial, Helvetica, sans-serif;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; font-family: var(--fuente); background: var(--color-fondo); color: #131b26; line-height: 1.6; }
+header { background: var(--color-oscuro); color: #f4f1ea; padding: 48px 24px 32px; text-align: center; border-bottom: 4px solid #78b1bc; }
+header h1 { margin: 12px 0; font-size: clamp(1.7rem, 4vw, 2.5rem); line-height: 1.25; }
+.etiqueta { color: #b4d8df; text-transform: uppercase; letter-spacing: 1.5px; font-size: .8rem; margin: 0; }
+.sub { color: #d1dce2; margin: 0 auto; max-width: 780px; }
+.grupo { margin: 24px auto 0; color: #d1dce2; max-width: 950px; }
+.grupo p { margin: 0 0 8px; font-size: .85rem; }
+.grupo ul { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 24px; list-style: none; padding: 0; margin: 0; }
+.grupo li { color: #f4f1ea; font-weight: 600; }
+.estado-equipo { color: #b4d8df; font-size: .8rem; margin: 16px 0 0; }
+main { max-width: 1100px; margin: 32px auto; padding: 0 20px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; }
+.tarjeta { min-width: 0; background: var(--color-tarjeta); border: 1px solid #dde5e8; border-radius: 12px; padding: 28px; box-shadow: 0 3px 12px rgba(20,45,59,.04); }
+.tarjeta.ancha { grid-column: 1 / -1; }
+.tarjeta h2 { margin-top: 0; color: var(--color-principal); font-size: 1.2rem; }
+.tarjeta p { color: #3b4656; }
+.servidor { display: grid; grid-template-columns: 1fr; gap: 10px; margin: 16px 0; }
+.servidor div { background: var(--color-suave); border-radius: 10px; padding: 12px 16px; }
+.dato { display: block; font-family: Consolas, "Courier New", monospace; font-size: 1.05rem; font-weight: 700; word-break: break-all; }
+.nombre { font-size: .8rem; color: #5e6878; }
+.historial { font-family: Consolas, "Courier New", monospace; font-size: .85rem; }
+button { background: var(--color-principal); color: #fff; border: 0; border-radius: 8px; padding: 10px 16px; min-height: 44px; font: inherit; font-size: .95rem; cursor: pointer; }
+button:hover { filter: brightness(.85); }
+button:focus-visible, input:focus-visible { outline: 3px solid #397a91; outline-offset: 3px; }
+.total { font-size: 1.1rem; }
+.barra { margin: 10px 0; }
+.barra .titulo { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; overflow-wrap: anywhere; font-size: .85rem; font-family: Consolas, "Courier New", monospace; }
+.barra .fondo { background: #e4e9f2; border-radius: 6px; height: 18px; overflow: hidden; }
+.barra .relleno { background: var(--color-principal); height: 100%; transition: width .5s; }
+form { display: flex; gap: 10px; flex-wrap: wrap; }
+input { flex: 1; min-width: 180px; max-width: 100%; padding: 10px; border: 1px solid #cfd6e2; border-radius: 8px; font: inherit; font-size: 1rem; }
+#mensajes { list-style: none; padding: 0; }
+#mensajes li { border-bottom: 1px solid #eef0f4; padding: 14px 0; overflow-wrap: anywhere; }
+#mensajes .meta { font-size: .78rem; color: #5e6878; }
+footer { text-align: center; color: #5e6878; font-size: .85rem; padding: 24px; }
+@media (max-width: 760px) {
+  header { padding: 32px 20px 24px; }
+  main { grid-template-columns: minmax(0, 1fr); padding: 0 16px; margin: 20px auto; gap: 16px; }
+  .tarjeta { padding: 20px; }
+  .grupo ul { flex-direction: column; gap: 4px; }
+  form { flex-direction: column; }
+  input { width: 100%; min-width: 0; }
+  .historial { overflow-wrap: anywhere; }
+}
